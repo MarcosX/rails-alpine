@@ -1,0 +1,17 @@
+FROM local/rails-alpine:latest
+
+# Add db specific libraries
+RUN apk add --no-cache --update sqlite-dev
+
+WORKDIR /usr/src
+RUN rails new sample-app && \
+      cd sample-app && \
+      rails db:migrate && \
+      rails test
+
+WORKDIR /usr/src/sample-app
+EXPOSE 3000
+
+# Bind to 0.0.0.0 to ensure localhost routing works as expected
+CMD ["bin/rails", "s", "-b", "0.0.0.0"]
+
