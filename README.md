@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/MarcosX/rails-alpine/tree/master.svg?style=svg)](https://circleci.com/gh/MarcosX/rails-alpine/tree/master)
+
 # rails-alpine
 Rails ready docker image based on Alpine
 
