@@ -1,10 +1,25 @@
 version: 2
 jobs:
   build:
-    machine: true
+    docker:
+      - image: docker:18.09-git
+    environment:
+      - TRIVY_VERSION: 0.2.1
     steps:
       - checkout
-      - run: make buildlocal
+      - run:
+          name: Build local image (local/rails-alpine)
+          command: |
+            make buildlocal
+      - run:
+          name: Install trivy
+          command: |
+            wget https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
+            tar zxvf trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
+            mv trivy /usr/local/bin
+      - run:
+          name: Scan the local image with trivy
+          command: trivy --clear-cache --no-progress --severity HIGH,CRITICAL local/rails-alpine
 workflows:
   version: 2
   build_and_test:
