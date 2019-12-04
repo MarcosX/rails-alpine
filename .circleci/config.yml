@@ -7,6 +7,7 @@ jobs:
       - TRIVY_VERSION: 0.2.1
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Build local image (local/rails-alpine)
           command: |
