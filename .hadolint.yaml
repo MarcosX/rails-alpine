@@ -1,0 +1,2 @@
+ignored:
+  - DL3018 # alpine only keep the latest stable version of packages, no need to force pin

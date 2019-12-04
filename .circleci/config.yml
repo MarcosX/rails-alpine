@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: docker:18.09-git
+      - image: docker:19.03-git
     environment:
       - TRIVY_VERSION: 0.2.1
     steps:
@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Build local image (local/rails-alpine)
           command: |
-            make buildlocal
+            docker build . -t local/rails-alpine
       - run:
           name: Install trivy
           command: |
