@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: make buildlocal
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+
