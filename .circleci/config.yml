@@ -12,6 +12,7 @@ jobs:
           name: Install hadolint
           command: |
             wget https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64 -O hadolint
+            chmod +x hadolint
             mv hadolint /usr/local/bin
       - run:
           name: Lint Dockerfile
