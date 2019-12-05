@@ -5,8 +5,17 @@ jobs:
       - image: docker:19.03-git
     environment:
       - TRIVY_VERSION: 0.2.1
+      - HADOLINT_VERSION: 1.17.3
     steps:
       - checkout
+      - run:
+          name: Install hadolint
+          command: |
+            https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64 -O hadolint
+            mv hadolint /usr/local/bin
+      - run:
+          name: Lint Dockerfile
+          command: hadolint Dockerfile
       - setup_remote_docker
       - run:
           name: Build local image (local/rails-alpine)
