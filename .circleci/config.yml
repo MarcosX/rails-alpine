@@ -18,11 +18,11 @@ jobs:
           name: Scan the local image with trivy
           command: |
             trivy --clear-cache --no-progress --severity HIGH,CRITICAL local/rails-alpine
-            #      - run:
-            #          name: Local tests
-            #          command: |
-            #            inspec exec test \
-            #              -t docker://$(docker run -it --rm -d local/rails-alpine sh)
+      - run:
+          name: Local tests
+          command: |
+            inspec exec test \
+              -t docker://$(docker run -it --rm -d local/rails-alpine sh)
       - run:
           name: DevSec Tests
           command: |
