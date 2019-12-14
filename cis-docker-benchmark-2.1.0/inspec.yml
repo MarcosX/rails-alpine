@@ -1,0 +1,8 @@
+name: cis-docker-benchmark
+title: CIS Docker Benchmark Profile
+maintainer: DevSec Hardening Framework Team
+copyright: DevSec Hardening Framework Team
+copyright_email: hello@dev-sec.io
+license: Apache-2.0
+summary: An InSpec Compliance Profile for the CIS Docker Benchmark
+version: 2.1.0

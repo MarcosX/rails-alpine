@@ -18,10 +18,30 @@ jobs:
           name: Scan the local image with trivy
           command: |
             trivy --clear-cache --no-progress --severity HIGH,CRITICAL local/rails-alpine
+            #      - run:
+            #          name: Local tests
+            #          command: |
+            #            inspec exec test \
+            #              -t docker://$(docker run -it --rm -d local/docker-builder sh)
+      - run:
+          name: DevSec Tests
+          command: |
+            inspec exec --no-distinct-exit linux-baseline-2.3.0 cis-docker-benchmark-2.1.0 \
+              -t docker://$(docker run -it --rm -d local/docker-builder sh)
+      - run:
+          name: Publish dev version
+          command: |
+            docker tag local/rails-alpine marcosx/rails-alpine:$CIRCLE_SHA1
+            docker login -u "${DOCKER_LOGIN}" -p "${DOCKER_PASSWORD}"
+            docker push marcosx/rails-alpine:$CIRCLE_SHA1
 
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
+      - build:
+          context: dockerhub
+          filters:
+            branches:
+              only: master
 
