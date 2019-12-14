@@ -2,35 +2,23 @@ version: 2
 jobs:
   build:
     docker:
-      - image: docker:19.03-git
-    environment:
-      - TRIVY_VERSION: 0.2.1
-      - HADOLINT_VERSION: 1.17.3
+      - image: marcosx/docker-builder:latest
     steps:
       - checkout
       - run:
-          name: Install hadolint
-          command: |
-            wget https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64 -O hadolint
-            chmod +x hadolint
-            mv hadolint /usr/local/bin
-      - run:
           name: Lint Dockerfile
-          command: hadolint Dockerfile
+          command: |
+            hadolint Dockerfile
       - setup_remote_docker
       - run:
           name: Build local image (local/rails-alpine)
           command: |
             docker build . -t local/rails-alpine
       - run:
-          name: Install trivy
-          command: |
-            wget https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
-            tar zxvf trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz
-            mv trivy /usr/local/bin
-      - run:
           name: Scan the local image with trivy
-          command: trivy --clear-cache --no-progress --severity HIGH,CRITICAL local/rails-alpine
+          command: |
+            trivy --clear-cache --no-progress --severity HIGH,CRITICAL local/rails-alpine
+
 workflows:
   version: 2
   build_and_test:
