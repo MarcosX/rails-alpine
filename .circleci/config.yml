@@ -22,12 +22,12 @@ jobs:
             #          name: Local tests
             #          command: |
             #            inspec exec test \
-            #              -t docker://$(docker run -it --rm -d local/docker-builder sh)
+            #              -t docker://$(docker run -it --rm -d local/rails-alpine sh)
       - run:
           name: DevSec Tests
           command: |
             inspec exec --no-distinct-exit linux-baseline-2.3.0 cis-docker-benchmark-2.1.0 \
-              -t docker://$(docker run -it --rm -d local/docker-builder sh)
+              -t docker://$(docker run -it --rm -d local/rails-alpine sh)
       - run:
           name: Publish dev version
           command: |
