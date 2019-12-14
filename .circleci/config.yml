@@ -34,6 +34,22 @@ jobs:
             docker tag local/rails-alpine marcosx/rails-alpine:$CIRCLE_SHA1
             docker login -u "${DOCKER_LOGIN}" -p "${DOCKER_PASSWORD}"
             docker push marcosx/rails-alpine:$CIRCLE_SHA1
+  publish:
+    docker:
+      - image: marcosx/docker-builder:0.0.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Publish tagged and latest version
+          command: |
+            docker pull marcosx/rails-alpine:$CIRCLE_SHA1
+            docker tag marcosx/rails-alpine:$CIRCLE_SHA1 marcosx/rails-alpine:$CIRCLE_TAG
+            docker tag marcosx/rails-alpine:$CIRCLE_SHA1 marcosx/rails-alpine:latest
+            docker login -u "${DOCKER_LOGIN}" -p "${DOCKER_PASSWORD}"
+            docker push marcosx/rails-alpine:$CIRCLE_TAG
+            docker push marcosx/rails-alpine:latest
+
 
 workflows:
   version: 2
@@ -44,4 +60,12 @@ workflows:
           filters:
             branches:
               only: master
-
+  release:
+    jobs:
+      - publish:
+          context: dockerhub
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
