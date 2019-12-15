@@ -1,4 +1,32 @@
 version: 2
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build:
+          context: dockerhub
+          filters:
+            branches:
+              only: master
+  release:
+    jobs:
+      - publish:
+          context: dockerhub
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+      - integration-test:
+          requires:
+            - publish
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
+
 jobs:
   build:
     docker:
@@ -34,6 +62,21 @@ jobs:
             docker tag local/rails-alpine marcosx/rails-alpine:$CIRCLE_SHA1
             docker login -u "${DOCKER_LOGIN}" -p "${DOCKER_PASSWORD}"
             docker push marcosx/rails-alpine:$CIRCLE_SHA1
+  integration-test:
+    docker:
+      - image: marcosx/docker-builder:0.0.1
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build and validate sample image
+          command: |
+            docker build . -f Dockerfile.test -t local/test-image
+            docker run --name test-image -p 3000:3000 --rm -d local/test-image
+            sleep 5
+            curl localhost:3000
+            docker stop test-image
+
   publish:
     docker:
       - image: marcosx/docker-builder:0.0.1
@@ -50,22 +93,3 @@ jobs:
             docker push marcosx/rails-alpine:$CIRCLE_TAG
             docker push marcosx/rails-alpine:latest
 
-
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build:
-          context: dockerhub
-          filters:
-            branches:
-              only: master
-  release:
-    jobs:
-      - publish:
-          context: dockerhub
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore: /.*/

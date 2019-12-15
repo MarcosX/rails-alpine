@@ -1,4 +1,4 @@
-FROM local/rails-alpine:latest
+FROM marcosx/rails-alpine:latest
 
 # Add db specific libraries
 RUN apk add --no-cache --update sqlite-dev
