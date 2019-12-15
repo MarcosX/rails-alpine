@@ -13,8 +13,9 @@ test_all:
 		docker stop local-test
 
 test_docker:
-	docker build . -f Dockerfile.test -t local/test-image && \
+	sed 's/IMG_TAG/latest/g; s/IMG_NAME/local\/rails-alpine/g' Dockerfile.test > Dockerfile.test.local && \
+		docker build . -f Dockerfile.test.local -t local/test-image && \
 		docker run --name test-image -p 3000:3000 --rm -d local/test-image && \
-		sleep 5 && \
-		curl localhost:3000 && \
-		docker stop test-image
+		echo 'Waiting for docker container to be ready...' && sleep 7 && \
+		curl -s -o /dev/null -w "Response code: %{http_code}\n" localhost:3000 && \
+		echo 'Stopping test container' && docker stop test-image

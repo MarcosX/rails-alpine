@@ -1,5 +1,5 @@
 # Image name and tag need to be replaced before testing
-FROM IMG_NAME:IMG_TAG
+FROM local/rails-alpine:latest
 
 # Add db specific libraries
 RUN apk add --no-cache --update sqlite-dev

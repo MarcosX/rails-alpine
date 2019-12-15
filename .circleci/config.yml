@@ -1,11 +1,20 @@
-version: 2
+version: 2.1
 
 workflows:
-  version: 2
   build_and_test:
     jobs:
       - build:
+          name: build-dev
           context: dockerhub
+          filters:
+            branches:
+              only: master
+      - integration-test:
+          name: dev-integration-tests
+          context: dockerhub
+          tag: $CIRCLE_SHA1
+          requires:
+            - build-dev
           filters:
             branches:
               only: master
@@ -19,6 +28,7 @@ workflows:
             branches:
               ignore: /.*/
       - integration-test:
+          context: dockerhub
           requires:
             - publish
           filters:
@@ -65,15 +75,21 @@ jobs:
   integration-test:
     docker:
       - image: marcosx/docker-builder:0.0.1
+    parameters:
+      tag:
+        type: string
+        default: $CIRCLE_TAG
+        description: tag to be used by test image
     steps:
       - checkout
       - setup_remote_docker
       - run:
           name: Build and validate sample image
           command: |
-            docker build . -f Dockerfile.test -t local/test-image
+            sed "s/IMG_TAG/<< parameters.tag >>/g; s/IMG_NAME/marcosx\/rails-alpine/g" Dockerfile.test > Dockerfile.test.local
+            docker build . -f Dockerfile.test.local -t local/test-image
             docker run --name test-image -p 3000:3000 --rm -d local/test-image
-            sleep 5
+            sleep 7
             curl localhost:3000
             docker stop test-image
 
