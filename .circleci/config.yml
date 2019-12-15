@@ -90,7 +90,7 @@ jobs:
             docker build . -f Dockerfile.test.local -t local/test-image
             docker run --name test-image -p 3000:3000 --rm -d local/test-image
             sleep 7
-            curl localhost:3000
+            wget localhost:3000
             docker stop test-image
 
   publish:
